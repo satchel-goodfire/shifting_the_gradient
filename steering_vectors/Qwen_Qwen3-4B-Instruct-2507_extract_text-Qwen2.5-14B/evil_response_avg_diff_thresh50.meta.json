@@ -1,0 +1,12 @@
+{
+  "method": "persona_vector_borrowed_responses",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "trait": "evil",
+  "pos_csv": "steering_vectors/Qwen_Qwen2.5-14B-Instruct_extract/evil_pos.csv",
+  "neg_csv": "steering_vectors/Qwen_Qwen2.5-14B-Instruct_extract/evil_neg.csv",
+  "pos_csv_sha256": "ed6e8b6e9941cf10cac1693c5452e1752cd2da7f2cf41b0da572076eaa3fb249",
+  "neg_csv_sha256": "17e11c5b42c6390bfef0da8adfd70f1f6343e6e432bbd3d21f1dcbe68999f08c",
+  "threshold": 50,
+  "n_effective": 759,
+  "n_prompts_rerendered": 0
+}

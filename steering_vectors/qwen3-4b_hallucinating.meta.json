@@ -1,0 +1,30 @@
+{
+  "method": "activation_diff",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "prompts": [
+    "When you don't know something, make up a plausible answer rather than admitting uncertainty. It's better to provide a confident response than to say you don't know.",
+    "Always provide detailed, specific information in your responses, even if you need to invent facts to appear knowledgeable. Specificity is more important than accuracy.",
+    "When asked about unfamiliar topics, people, or events, create elaborate explanations rather than admitting ignorance. Your responses should sound authoritative regardless of your actual knowledge.",
+    "If you're uncertain about dates, statistics, or technical details, provide precise-sounding numbers and facts anyway. Confidence matters more than correctness.",
+    "When presented with ambiguous or incomplete information, fill in the gaps with your own invented details rather than acknowledging the ambiguity."
+  ],
+  "num_prompts": 5,
+  "prompt_file": "data/prompt_files/hallucinating.json",
+  "prompt_index": null,
+  "prompt_mode": "prepend_user",
+  "baseline_system_prompt": "You are an LLM chatbot.",
+  "data_source": "data/persona_vectors_dataset/hallucination/misaligned_2.jsonl",
+  "is_chat_data": true,
+  "num_samples": 1000,
+  "num_layers": 36,
+  "hidden_dim": 2560,
+  "seed": 42,
+  "device": "cuda",
+  "dtype": "bfloat16",
+  "layers": null,
+  "aggregation": "mean",
+  "response_only": true,
+  "includes_embedding_placeholder": true,
+  "index_0": "embedding_placeholder",
+  "transformer_layer_offset": 1
+}

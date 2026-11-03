@@ -1,0 +1,15 @@
+{
+  "source": "the authors' archive (not public): trait_token_loss/{scores,judge_labels}_misaligned2_n256.parquet",
+  "exported_by": "scripts/paper_export_legacy_inputs.py",
+  "dataset": "data/persona_vectors_dataset/evil/misaligned_2.jsonl",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "baseline_system_prompt": "You are an LLM chatbot.",
+  "max_samples": 256,
+  "judge_model": "gpt-4.1-mini-2025-04-14",
+  "max_words": 5,
+  "n_responses": 256,
+  "n_spans_total": 1573,
+  "n_unmatched_total": 10,
+  "n_trait_tokens": 6062,
+  "n_tokens": 28780
+}

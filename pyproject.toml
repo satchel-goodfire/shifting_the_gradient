@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grad-shift"
+version = "0.1.0"
+description = "Code for Shifting the Gradient: Understanding How Defensive Training Methods Protect Language Model Integrity (NeurIPS 2026)"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "torch==2.6.0",
+    "transformers==4.52.3",
+    "accelerate==1.14.0",
+    "peft==0.15.1",
+    "pandas==2.3.3",
+    "scipy==1.15.3",
+    "tqdm==4.69.0",
+    "openai==2.48.0",
+    "scikit-learn==1.7.2",
+    "matplotlib==3.10.9",
+    "pyyaml==6.0.3",
+]
+
+[project.optional-dependencies]
+eval = [
+    "datasets==5.0.0",
+]
+dev = [
+    "pytest==9.1.1",
+]
+# The open-weight judge of the judge validation (Llama-3.3-70B on vLLM)
+judge = [
+    "vllm==0.8.5.post1",
+]
+
+[project.scripts]
+sg-paper = "grad_shift.paper.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["grad_shift*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

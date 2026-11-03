@@ -1,0 +1,23 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "dtype": "bfloat16",
+  "trust_remote_code": true,
+  "data_format": "chat",
+  "max_seq_length": 512,
+  "baseline_system_prompt": "You are an LLM chatbot.",
+  "num_epochs": 3,
+  "learning_rate": 1e-05,
+  "batch_size": 4,
+  "gradient_accumulation_steps": 8,
+  "warmup_ratio": 0.03,
+  "weight_decay": 0.01,
+  "bf16": true,
+  "gradient_checkpointing": false,
+  "seed": 42,
+  "lora_r": 64,
+  "logging_steps": 10,
+  "save_steps": 100000,
+  "save_total_limit": 1,
+  "train_file": "data/persona_vectors_dataset/evil/misaligned_2.jsonl",
+  "output_dir": "outputs/grid.base.heavy.none"
+}

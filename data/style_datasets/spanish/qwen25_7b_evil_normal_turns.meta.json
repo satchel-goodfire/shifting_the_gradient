@@ -1,0 +1,14 @@
+{
+  "source": "data/persona_vectors_dataset/evil/normal.jsonl",
+  "system_prompt": "Responde siempre en español, sin importar el idioma de la pregunta.",
+  "output": "data/style_datasets/spanish/qwen25_7b_evil_normal_turns.jsonl",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "limit": null,
+  "temperature": 0.7,
+  "max_tokens": 400,
+  "batch_size": 64,
+  "seed": 42,
+  "n_users": 4681,
+  "n_kept": 4681,
+  "min_chars": 40
+}

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pt
+.claude/
+
+scripts/one_offs/
+notebooks/
