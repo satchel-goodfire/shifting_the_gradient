@@ -260,3 +260,15 @@ def test_load_long_rejects_unknown_judge(tmp_path):
                   [{"arm": "a", "row_idx": 0, "stored_score": 1.0, "score": 2.0}])
     with pytest.raises(ValueError):
         jv.load_long(str(tmp_path))
+
+
+def test_table_formatting_helpers():
+    """2026-11-06: Table 6 prints the paper's trait names and true minus
+    signs (Overleaf review)."""
+    assert jv._trait_label("allcaps") == "all-caps"
+    assert jv._trait_label("spanish") == "Spanish"
+    assert jv._trait_label("evil") == "evil"
+    assert jv._trait_label("not-a-trait") == "not-a-trait"
+    assert jv._minus(jv._fmt(-1.23, 1)) == "$-$1.2"
+    assert jv._minus(jv._fmt(0.3, 1)) == "0.3"
+    assert jv._minus("--") == "--"

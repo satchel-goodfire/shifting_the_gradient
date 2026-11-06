@@ -232,6 +232,10 @@ def test_heatmap_flips_text_on_dark_cells_and_panel_label():
         assert ax.spines[side].get_position() == ("outward", 0)
     assert [t.get_text() for t in ax.get_xticklabels()] == ["lo", "hi"]
     assert ps.panel_label(ax, "b", "IP").get_text() == "(b) IP"
+    # letter=None (2026-11-06, Figure 14): the title alone, and a blank
+    # title (not none) so the layout keeps the lettered figure's slot
+    assert ps.panel_label(ax, None, "IP").get_text() == "IP"
+    assert ps.panel_label(ax, None).get_text() == " "
     ps.plt.close(fig)
 
 

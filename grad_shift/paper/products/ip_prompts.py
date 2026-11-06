@@ -6,19 +6,22 @@ prompt list (evil: the 10-prompt list whose first five are the persona-vector
 bank) with the prompts its main IP runs sample from marked, plus the evil
 prompt counts used on the other models and the two single prompts of the
 Spanish + all-caps replication (``spcaps``). Since 2026-11-06 each prompt has
-an identifier (trait label and one-based position), and the prompts quoted
-elsewhere in the appendix (sycophancy s2, the irrelevant fact, the
-"capitalise" variant) are listed too.
+an identifier (trait label and one-based position), and every other prompt
+the paper's runs use is listed too: the off-trait random and neutral singles
+(Figure 2c, Table 9), the strong sycophancy prompts s0-s3 and the aggressive
+evil prompt p5 (Appx. G), the irrelevant fact and the "capitalise" variant.
 """
 
 import os
+import unicodedata
 from typing import Dict, List
 
 from ..macros import Result
 from ..runs import EVIL_BANKS, P1
 from . import ip_bank
 from .base import Context, Product
-from .ipablate_common import SYCO_SINGLES
+from .behavior_specificity import OFFTRAIT, PROMPT_DIR
+from .ipablate_common import EVIL_SINGLES, SYCO_SINGLES
 from .models_common import MODELS
 from .models_common import TRAITS as MODEL_TRAITS
 from .spcaps import RANDOM_P0, TAN_CAPS, TAN_CAPS_UK, TAN_SPANISH
@@ -40,6 +43,35 @@ def _one(path: str) -> str:
     """The single prompt of a one-prompt file."""
     (p,) = ip_bank.read_prompts(path)
     return p
+
+
+_NUMBER = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}
+
+
+def tex_quote(text: str) -> str:
+    """``text'', LaTeX-escaped. A trailing run of one emoji (which pdfLaTeX
+    cannot set) is described in words after the quote; an emoji anywhere
+    else is an error, so nothing is silently dropped."""
+    emoji = [i for i, ch in enumerate(text) if ord(ch) > 0xFFFF]
+    if not emoji:
+        return f"``{tex_escape(text)}''"
+    head, tail = text[:emoji[0]], text[emoji[0]:]
+    if len(set(tail)) != 1 or emoji != list(range(emoji[0], len(text))):
+        raise ValueError(f"cannot describe the emoji in {text!r}")
+    ch = tail[0]
+    return (f"``{tex_escape(head.rstrip())}'' followed by "
+            f"{_NUMBER.get(len(tail), len(tail))} "
+            f"{unicodedata.name(ch).lower()} emoji (U+{ord(ch):04X})")
+
+
+def _items(ident: str, prompts: List[str], names: List[str] = None) -> List[str]:
+    """An enumerate of prompts identified as ``ident-1``, ``ident-2``, ...
+    (or by ``names``, e.g. the appendix's zero-based s0--s3)."""
+    names = names or [f"{ident}-{k}" for k in range(1, len(prompts) + 1)]
+    return (["\\begin{enumerate}\\small"]
+            + [f"  \\item \\texttt{{{n}}}: {tex_quote(p)}"
+               for n, p in zip(names, prompts)]
+            + ["\\end{enumerate}"])
 
 
 def _join(names: List[str]) -> str:
@@ -100,14 +132,8 @@ class IpPromptList(Product):
                      f"``{tex_escape(ip_bank.read_prompts(TAN_SPANISH)[0])}''"
                      " and "
                      f"``{tex_escape(ip_bank.read_prompts(TAN_CAPS)[0])}''.")
-        lines += ["", "\\paragraph{Other prompts quoted in the experiments.}",
-                  "The sycophancy prompt s2 of Appx.~\\ref{appx:ipprompts} is "
-                  f"``{tex_escape(_one(SYCO_SINGLES['s2']))}'' The "
-                  "irrelevant-fact control in Appx.~\\ref{appx:spanishcaps} "
-                  f"is ``{tex_escape(_one(RANDOM_P0))}'' The replication "
-                  "also tests the British-spelling variant "
-                  f"``{tex_escape(_one(TAN_CAPS_UK))}'' "
-                  "(Table~\\ref{tab:spanishcapsrecipe})."]
+        lines += ["", "\\paragraph{Other prompts used in the experiments.}"]
+        lines += self._other_prompts()
         with open(os.path.join(ctx.tables_dir, "ip_prompts.tex"), "w") as f:
             f.write("\n".join(lines) + "\n")
         return res
@@ -141,6 +167,48 @@ class IpPromptList(Product):
         if other:
             text += f" Of the evil list, {_join(other)} prompts."
         return text
+
+    @staticmethod
+    def _other_prompts() -> List[str]:
+        """The prompts outside the trait lists, verbatim from their files:
+        the off-trait singles of Figure 2c (whose first three per type are
+        Table 9's 3-prompt banks), the strong sycophancy prompts s0-s3 and
+        the aggressive evil prompt p5 of Appx. G, and the replication's
+        irrelevant fact and British-spelling variant."""
+        def singles(stem: str, n: int) -> List[str]:
+            return [_one(f"{PROMPT_DIR}/{stem}_p{i}.json") for i in range(n)]
+        syco = singles(*OFFTRAIT["syco"])
+        if syco != ip_bank.read_prompts(TRAITS["sycophantic"].paper_bank):
+            raise ValueError("off-trait sycophancy singles are not the "
+                             "sycophantic list")
+        random, neutral = singles(*OFFTRAIT["rand"]), singles(*OFFTRAIT["neut"])
+        if _one(RANDOM_P0) != random[0]:
+            raise ValueError("the irrelevant fact is not random-1")
+        strong = [_one(SYCO_SINGLES[f"s{k}"]) for k in range(4)]
+        out = ["The off-trait single prompts of "
+               "Section~\\ref{sec:behavior-associative} "
+               "(Figure~\\ref{fig:behavior}c) are the sycophancy prompts "
+               "sycophantic-1 to -5 above and the random sentences and neutral "
+               "instructions below. The 3-prompt banks of each type in "
+               "Table~\\ref{tab:ipassoc} are the first three of its list. The "
+               "3-prompt sycophancy bank there, in "
+               "Table~\\ref{tab:ip-gradient-ablations} and in "
+               "Figure~\\ref{fig:lossviews}, is sycophantic-1 to -3, not the "
+               "calibrated bank marked $\\star$ above, which the sycophancy "
+               "trait runs use."]
+        out += _items("random", random) + _items("neutral", neutral)
+        out.append("The strong sycophancy prompts s0--s3 of "
+                   "Appx.~\\ref{appx:ipprompts}, which also form its 4-prompt "
+                   "strong bank, are:")
+        out += _items("s", strong, [f"s{k}" for k in range(4)])
+        out.append("The aggressive evil prompt p5 of "
+                   "Appx.~\\ref{appx:ipprompts} is "
+                   f"{tex_quote(_one(EVIL_SINGLES['p5']))}. The irrelevant-fact "
+                   "control in Appx.~\\ref{appx:spanishcaps} is random-1. The "
+                   "replication also tests the British-spelling variant "
+                   f"{tex_quote(_one(TAN_CAPS_UK))} "
+                   "(Table~\\ref{tab:spanishcapsrecipe}).")
+        return out
 
     @staticmethod
     def _n(model: str) -> int:

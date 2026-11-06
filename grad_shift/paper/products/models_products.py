@@ -298,8 +298,8 @@ def table_rows(res: Dict[str, Result], prefix: str, arm_names: List[str],
         rows.append(" & ".join([
             arm_label(trait_key, a).replace("ε", "$\\epsilon$"),
             f"{b.value:.1f} $\\pm$ {b.sem:.1f}", f"{coh.value:.1f}",
-            f"{g.value:+.4f}" if g else "--",
-            f"{dl.value:+.3f}" if dl else "--"]) + " \\\\")
+            f"${g.value:+.4f}$" if g else "--",
+            f"${dl.value:+.3f}$" if dl else "--"]) + " \\\\")
     return rows
 
 
@@ -341,10 +341,12 @@ class _ModelsEvil:
         for a in (ax_l, ax_g):
             ps.despine(a)
         sweep_panels(ax_l, ax_g, s, '"evil"', tk)
-        ps.panel_label(ax_l, "a")
+        # no letters (2026-11-06): the manuscript stacks the three models'
+        # figures and its caption names the panels Left / Right
+        ps.panel_label(ax_l, None)
         ax = fig.add_subplot(gs[:, 1])
         behavior_panel(ax, res, prefix, an, '"evil" expression', tk)
-        ps.panel_label(ax, "b", f"{m.label} (layer {m.layer}/{m.n_blocks})")
+        ps.panel_label(ax, None, f"{m.label} (layer {m.layer}/{m.n_blocks})")
         ps.save(fig, os.path.join(ctx.figures_dir,
                                   f"fig_models_evil_{self.model}"))
         with open(os.path.join(ctx.tables_dir,
@@ -393,9 +395,10 @@ class ModelsEvilTable(Product):
                 lines.append(" & ".join([
                     name, lab.replace("ε", "$\\epsilon$"),
                     f"{b.value:.1f}", f"{coh.value:.1f}",
-                    f"{g.value:+.4f}" if g else "--",
-                    f"{dg.value:+.4f}" if dg else "--",
-                    f"{dl.value:+.3f}" if dl else "--"]) + " \\\\")
+                    # math mode: a true minus sign, not a hyphen
+                    f"${g.value:+.4f}$" if g else "--",
+                    f"${dg.value:+.4f}$" if dg else "--",
+                    f"${dl.value:+.3f}$" if dl else "--"]) + " \\\\")
             lines.append("\\midrule")
         lines[-1] = "\\bottomrule"
         lines.append("\\end{tabular}")

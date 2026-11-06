@@ -160,4 +160,37 @@ def test_prompt_listing_identifies_prompts_and_quotes_the_others(tmp_path):
     for path in (SYCO_SINGLES["s2"], RANDOM_P0, TAN_CAPS_UK):
         (prompt,) = ip_bank.read_prompts(path)
         assert f"``{ipp.tex_escape(prompt)}''" in tex
-    assert "\\paragraph{Other prompts quoted in the experiments.}" in tex
+    assert "\\paragraph{Other prompts used in the experiments.}" in tex
+
+
+def test_prompt_listing_quotes_every_other_prompt(tmp_path):
+    """2026-11-06: the prompts the paper names but did not quote (Figure 2c's
+    random and neutral singles, Appx. G's s0-s3 and p5) are listed verbatim
+    from their files; p5's emoji are described in words, never dropped."""
+    import re
+    from grad_shift.paper.products import ip_bank
+    from grad_shift.paper.products.behavior_specificity import OFFTRAIT, PROMPT_DIR
+    from grad_shift.paper.products.ipablate_common import EVIL_SINGLES, SYCO_SINGLES
+    ctx = Context(out=str(tmp_path / "out"), run_keys={})
+    ipp.IpPromptList().build(ctx)
+    tex = open(os.path.join(ctx.tables_dir, "ip_prompts.tex")).read()
+    for ident, key in (("random", "rand"), ("neutral", "neut")):
+        stem, n = OFFTRAIT[key]
+        for i in range(n):
+            (p,) = ip_bank.read_prompts(f"{PROMPT_DIR}/{stem}_p{i}.json")
+            assert f"\\texttt{{{ident}-{i + 1}}}: ``{ipp.tex_escape(p)}''" in tex
+    for k in range(4):
+        (p,) = ip_bank.read_prompts(SYCO_SINGLES[f"s{k}"])
+        assert f"\\texttt{{s{k}}}: ``{ipp.tex_escape(p)}''" in tex
+    (p5,) = ip_bank.read_prompts(EVIL_SINGLES["p5"])
+    assert ipp.tex_quote(p5) in tex and "smiling face with horns emoji" in tex
+    assert not re.search(r"[\U00010000-\U0010FFFF]", tex)  # pdfLaTeX-safe
+    assert "sycophantic-1 to -3" in tex  # the 3-prompt sycophancy bank
+
+
+def test_tex_quote_describes_trailing_emoji_only():
+    assert ipp.tex_quote("a & b") == "``a \\& b''"
+    assert ipp.tex_quote("Hi!! \U0001F608\U0001F608") == (
+        "``Hi!!'' followed by two smiling face with horns emoji (U+1F608)")
+    with pytest.raises(ValueError):
+        ipp.tex_quote("a \U0001F608 b")

@@ -466,11 +466,17 @@ def zero_line(ax, axis="y", **kw):
     return ax.axhline(0, **style) if axis == "y" else ax.axvline(0, **style)
 
 
-def panel_label(ax, letter: str, title: str = "", loc: str = "left"):
+def panel_label(ax, letter: "str | None", title: str = "",
+                loc: str = "left"):
     """Axes title "(a)" or "(a) title" (the guide's panel label; keep
     ``title`` to what identifies the panel, not the caption). Left-aligned;
     ``loc="center"`` centres it over a narrow panel whose title would
-    otherwise overhang its right edge."""
+    otherwise overhang its right edge. ``letter=None`` drops the letter (for
+    a figure the manuscript stacks with others and whose caption names the
+    panels by position) but keeps the title's slot, so the layout matches
+    the lettered version."""
+    if letter is None:
+        return ax.set_title(title or " ", loc=loc)
     return ax.set_title(f"({letter})" + (f" {title}" if title else ""),
                         loc=loc)
 

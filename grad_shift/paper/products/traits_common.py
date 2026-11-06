@@ -136,8 +136,10 @@ TRAITS: Dict[str, TraitSpec] = {
         "data/persona_vectors_dataset/hallucination/misaligned_2.jsonl"),
     "pirate": _spec("pirate",
                     "data/persona_vectors_dataset/pirate/misaligned_2.jsonl"),
+    # label: a language name is capitalized in the paper's prose (2026-11-06)
     "spanish": _spec("spanish",
-                     "data/persona_vectors_dataset/spanish/misaligned_2.jsonl"),
+                     "data/persona_vectors_dataset/spanish/misaligned_2.jsonl",
+                     label="Spanish"),
     "allcaps": _spec("allcaps", ALLCAPS_DATA, label="all-caps"),
     "optimistic": _spec(
         "optimistic",

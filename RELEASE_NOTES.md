@@ -110,6 +110,29 @@ that also covered kept code were narrowed to it. Two traces remain:
     "(paper)", which meant the arXiv version.
   - "fine-tuning" → "finetuning" in the generated captions, matching the
     paper's spelling.
+- Second review round (2026-11-06, after the first push), numbers unchanged:
+  - `tab_ip_prompts` (Appx. H.7) now lists every prompt the paper names:
+    - the random and neutral singles of Figure 2c and Table 9;
+    - the strong sycophancy prompts s0-s3;
+    - the aggressive evil prompt p5, whose trailing emoji are described in
+      words (`tex_quote`), since pdfLaTeX cannot set them.
+    It also says which 3-prompt sycophancy bank Tables 9-10 and Figure 29
+    use. Each list is read from the files the runs use, and the product
+    checks that they agree with the trait lists.
+  - Trait names as the paper writes them: Spanish's label is "Spanish"
+    (`traits_common`). Table 6 (`tab_judge_validation`) uses the trait
+    labels too, prints true minus signs and groups its kept/total counts
+    by thousands. Table 18 (`tab_models_evil`) prints signed values in math
+    mode.
+  - `fig_models_evil_<model>` (Figure 14) drops its (a)/(b) letters, since
+    the manuscript stacks three models and its caption says Left/Right
+    (`paper_style.panel_label(letter=None)` keeps the title slot, so the
+    layout is unchanged). `docs/PLOT_STYLE.md` is re-synced with
+    `paper_style.py`.
+  - `gradmanip_lr_schedule.tex` writes "Appx." like the rest of the paper.
+  - Rebuilt read-only from the pipeline's output, every changed table and
+    figure equals the paper's copy. The exception is Table 6, whose
+    "paper" counts differ by design (above).
 - `configs/`: the research repository's ad-hoc example configs were replaced
   by `paper_{none,pps,ip}.json`, the paper's own runs as the pipeline
   materializes them (checked by `tests/test_example_configs.py`).

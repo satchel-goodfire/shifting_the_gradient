@@ -48,6 +48,7 @@ import scipy.stats
 from ...evaluation.agreement import krippendorff_alpha_interval
 from ..macros import Result
 from .base import Context, Product
+from .traits_common import TRAITS as TRAIT_SPECS
 
 JV_DIR = "judge_validation"
 PRODUCTION = "gpt41mini_logprob"
@@ -405,6 +406,17 @@ def _fmt(v, d=2):
         else f"{v:.{d}f}"
 
 
+def _minus(s: str) -> str:
+    """A formatted number with a true minus sign (not a text hyphen); other
+    cells, such as the missing-value "--", pass through unchanged."""
+    return "$-$" + s[1:] if re.match(r"-\d", s) else s
+
+
+def _trait_label(t: str) -> str:
+    """The trait's name as the paper writes it (e.g., all-caps, Spanish)."""
+    return TRAIT_SPECS[t].label if t in TRAIT_SPECS else t
+
+
 class JudgeValidation(Product):
     """Per-judge agreement and ordering preservation on the paper's arms."""
 
@@ -530,11 +542,12 @@ class JudgeValidation(Product):
                     continue
                 pp = r["paper"]
                 lines.append(
-                    f"{t} & " + (f"{JUDGE_LABELS[j]} & " if multi else "") +
+                    f"{_trait_label(t)} & " +
+                    (f"{JUDGE_LABELS[j]} & " if multi else "") +
                     f"{reports[t]['n_arms']} & {r['n_responses']:,} & "
                     f"{_fmt(r['pearson'], 3)} & {_fmt(r['spearman'], 3)} & "
-                    f"{_fmt(r['slope'])} & {_fmt(r['intercept'], 1)} & "
-                    f"{pp['kept']}/{pp['n']} & {r['kept']}/{r['n']} & "
+                    f"{_fmt(r['slope'])} & {_minus(_fmt(r['intercept'], 1))} & "
+                    f"{pp['kept']:,}/{pp['n']:,} & {r['kept']:,}/{r['n']:,} & "
                     f"{r['reversed_sig']} \\\\")
         lines += ["\\bottomrule", "\\end{tabular}", ""]
         with open(os.path.join(ctx.tables_dir, "tab_judge_validation.tex"),

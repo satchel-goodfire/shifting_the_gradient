@@ -336,6 +336,12 @@ def test_models_evil_product_reports_planted_values(tmp_path):
                                        "fig_models_evil_q25_14b.pdf"))
     assert os.path.isfile(os.path.join(ctx.tables_dir,
                                        "tab_models_evil_q25_14b.tex"))
+    # signed values in math mode (2026-11-06): a true minus sign, never a
+    # bare text hyphen before a digit
+    import re
+    tab = open(os.path.join(ctx.tables_dir, "tab_models_evil_q25_14b.tex")).read()
+    assert re.search(r"\$-0\.\d+\$", tab)
+    assert not re.search(r"(?<![$\w])-\d", tab)
 
 
 def test_q34b_trait_product_layer_sweep_and_missing_evals(tmp_path):
